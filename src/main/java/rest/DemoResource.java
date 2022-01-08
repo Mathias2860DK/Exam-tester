@@ -14,7 +14,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
+
+import facades.Populator;
 import utils.EMF_Creator;
+import utils.SetupTestUsers;
 
 /**
  * @author lam@cphbusiness.dk
@@ -35,6 +38,28 @@ public class DemoResource {
         return "{\"msg\":\"Hello anonymous\"}";
     }
 
+    @GET
+    @Path("populate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String populateTestUsers(){
+        SetupTestUsers.populateTestUsers();
+        return "done";
+    }
+
+    @GET
+    @Path("addBoatToOwner")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String addBoatToOwner(){
+        SetupTestUsers.addBoatToOwner();
+        return "done";
+    }
+    @GET
+    @Path("populateOwners")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String populateTestOwners(){
+        SetupTestUsers.setupTestOwners();
+        return "done";
+    }
     //Just to verify if the database is setup
     @GET
     @Produces(MediaType.APPLICATION_JSON)
