@@ -1,12 +1,16 @@
 package rest;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import dtos.OwnerDTO;
+import entities.Owner;
 import entities.User;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
@@ -16,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import facades.Populator;
+import facades.UserFacade;
 import utils.EMF_Creator;
 import utils.SetupTestUsers;
 
@@ -26,6 +31,8 @@ import utils.SetupTestUsers;
 public class DemoResource {
     
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
+    private final UserFacade userFacade = UserFacade.getUserFacade(EMF);
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
     @Context
     private UriInfo context;
 
@@ -46,15 +53,24 @@ public class DemoResource {
         return "done";
     }
 
+    //US 3
     @GET
-    @Path("addBoatToOwner")
+    @Path("/allOwnersByBoat/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAllOwnersByBoatId(@PathParam("id") String id){
+        List<OwnerDTO> ownersByBoat = userFacade.getAllOwnersById(id);
+        return gson.toJson(ownersByBoat);
+    }
+
+    @GET
+    @Path("/addBoatToOwner")
     @Produces(MediaType.APPLICATION_JSON)
     public String addBoatToOwner(){
         SetupTestUsers.addBoatToOwner();
         return "done";
     }
     @GET
-    @Path("populateOwners")
+    @Path("/populateOwners")
     @Produces(MediaType.APPLICATION_JSON)
     public String populateTestOwners(){
         SetupTestUsers.setupTestOwners();

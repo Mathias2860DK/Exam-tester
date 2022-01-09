@@ -24,6 +24,8 @@ public class Boat {
     @Column(name = "name")
     private String name;
 
+    private Harbour harbour;
+
     @Column(name = "image")
     private String image;
 
@@ -47,6 +49,14 @@ public class Boat {
     }
 
     public Boat() {
+    }
+
+    public Harbour getHarbour() {
+        return harbour;
+    }
+
+    public void setHarbour(Harbour harbour) {
+        this.harbour = harbour;
     }
 
     public String getBrand() {
@@ -79,5 +89,19 @@ public class Boat {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Boat{" +
+                "brand='" + brand + '\'' +
+                ", make='" + make + '\'' +
+                ", name='" + name + '\'' +
+                ", image='" + image + '\'' +
+                '}';
     }
 }

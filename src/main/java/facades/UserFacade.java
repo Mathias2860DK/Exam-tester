@@ -1,6 +1,7 @@
 package facades;
 
 import dtos.OwnerDTO;
+import entities.Boat;
 import entities.Owner;
 import entities.User;
 import javax.persistence.EntityManager;
@@ -36,6 +37,27 @@ public class UserFacade {
         return instance;
     }
 
+    //US3
+    public List<OwnerDTO> getAllOwnersById(String id){
+        int idInt = Integer.parseInt(id);
+        EntityManager em = emf.createEntityManager();
+        Boat boat;
+        try {
+            boat = em.find(Boat.class, idInt);
+            if (boat == null) {
+                throw new WebApplicationException("No boats found");
+            }
+        } finally {
+            em.close();
+        }
+        List<Owner> owners = boat.getOwners();
+        List<OwnerDTO> ownerDTOS = new ArrayList<>();
+        for (Owner owner: owners) {
+            OwnerDTO ownerDTO = new OwnerDTO(owner);
+            ownerDTOS.add(ownerDTO);
+        }
+return ownerDTOS;
+    }
     public List<OwnerDTO> getAllOwners(){
         EntityManager em = emf.createEntityManager();
         List<Owner> owners = em.createQuery("select o FROM Owner o",Owner.class).getResultList();

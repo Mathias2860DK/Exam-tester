@@ -1,10 +1,7 @@
 package utils;
 
 
-import entities.Boat;
-import entities.Owner;
-import entities.Role;
-import entities.User;
+import entities.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -19,10 +16,13 @@ public class SetupTestUsers {
     EntityManager em = emf.createEntityManager();
     Boat boat = new Boat("Volvo","MODEL 5","Speed boat","wwww.img.com");
     Owner owner1 = new Owner("I own a boat","test1",1111);
+    Owner owner2 = new Owner("I also own a boat","test2",2222);
     owner1.addBoatToOwner(boat);
+    owner2.addBoatToOwner(boat);
     em.getTransaction().begin();
 
     em.persist(owner1);
+    em.persist(owner2);
     em.getTransaction().commit();
   }
 
@@ -75,6 +75,23 @@ public class SetupTestUsers {
     System.out.println("Testing user with OK password: " + user.verifyPassword("test"));
     System.out.println("Testing user with wrong password: " + user.verifyPassword("test1"));
     System.out.println("Created TEST Users");
+
+    //Adding harbours
+    Harbour harbour1 = new Harbour("Vedbæk vej","Vedbæk havn",300);
+    Harbour harbour2 = new Harbour("Amager vej","Amger havn",500);
+    Harbour harbour3= new Harbour("Sønderborg vej","Sønderborg havn",1000);
+
+    //adding boats
+    Boat boat1 = new Boat("Volvo","make","speedboat","www.img.com");
+    Boat boat2 = new Boat("Volvo","make","speedboat","www.img.com");
+
+    //Connecting boat to harbour
+    harbour1.addBoat(boat1);
+    em.getTransaction().begin();
+    em.persist(harbour1);
+    em.persist(harbour2);
+    em.persist(harbour3);
+    em.getTransaction().commit();
 
   }
 
