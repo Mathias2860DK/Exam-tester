@@ -57,8 +57,12 @@ public class RegisterEndpoint {
             em.getTransaction().begin();
             Role userRole = new Role("user");//ikke markeret CASCADE PERSIST
             user.addRole(userRole);
-            em.persist(userRole);
+            Role checkIfRoleExists = em.find(Role.class,userRole.getRoleName());
+            if (checkIfRoleExists == null){
+                em.persist(userRole);
+            }
             em.persist(user);
+
             em.getTransaction().commit();
             JsonObject responseJson = new JsonObject();
             int statusCode = Response.ok().build().getStatus();
