@@ -1,5 +1,8 @@
 package entities;
 
+import dtos.BoatDTO;
+import dtos.RenameMeDTO;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -24,12 +27,13 @@ public class Boat {
     @Column(name = "name")
     private String name;
 
+    @ManyToOne
     private Harbour harbour;
 
     @Column(name = "image")
     private String image;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     List<Owner> owners;
 
     public List<Owner> getOwners() {

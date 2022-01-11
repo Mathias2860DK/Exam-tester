@@ -2,16 +2,13 @@ package facades;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dtos.BoatDTO;
-import dtos.OwnerDTO;
-import entities.Boat;
-import entities.Harbour;
-import entities.Owner;
-import entities.User;
+import dtos.*;
+import entities.*;
 import security.errorhandling.AuthenticationException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +35,35 @@ public class AdminFacade {
         }
         return instance;
     }
+
+    public List<BoatDTO> getAllBoats() {
+        EntityManager em = emf.createEntityManager();
+        TypedQuery<Boat> query = em.createQuery("SELECT b FROM Boat b", Boat.class);
+        List<Boat> boats = query.getResultList();
+        return BoatDTO.getDtos(boats);
+    }
+    public AllInfoDTO getAllInfoByBoatId(String boatId) {
+        EntityManager em = emf.createEntityManager();
+        int boatIdInt = Integer.parseInt(boatId);
+        Boat boat = em.find(Boat.class,boatIdInt);
+        List<Owner> owners = boat.getOwners();
+        Harbour harbour = boat.getHarbour();
+        BoatDTO boatDTO = new BoatDTO(boat);
+        List<OwnerDTO> ownerDTOS = new ArrayList<>();
+        for (Owner owner: owners) {
+            ownerDTOS.add(new OwnerDTO(owner));
+        }
+        HarbourDTO harbourDTO = new HarbourDTO(harbour);
+
+
+      //  TypedQuery<Harbour> query = em.createQuery("SELECT h FROM Harbour h WHERE h.name = :name", Harbour.class);
+
+
+        AllInfoDTO allInfoDTO = new AllInfoDTO(boatDTO,ownerDTOS,harbourDTO);
+
+        return allInfoDTO;
+    }
+
 
     //US4
     public BoatDTO createBoat(String boatJSON) {
@@ -70,7 +96,7 @@ public class AdminFacade {
     }
 
     //US 5
-    public String connectBoatToHarbour(String harbourId, String boatIdJSON) {
+    public BoatDTO connectBoatToHarbour(String harbourId, String boatIdJSON) {
         EntityManager em = emf.createEntityManager();
         System.out.println(harbourId);
 
@@ -86,18 +112,19 @@ public class AdminFacade {
         throw new WebApplicationException(e.getMessage(), 400);
     }
 
-   /*     try {
-            em.find(Harbour.class,harbourIdInt);
+        try {
+            Harbour harbour = em.find(Harbour.class,harbourIdInt);
+            Boat boat = em.find(Boat.class,boatIdInt);
+            harbour.addBoat(boat);
             em.getTransaction().begin();
-            em.persist(boat);
+            em.persist(harbour);
             em.getTransaction().commit();
             return new BoatDTO(boat);
         } catch (RuntimeException e) {
             throw new WebApplicationException(e.getMessage());
         } finally {
             em.close();
-        }*/
+        }
 
-        return "";
     }
 }

@@ -2,6 +2,7 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dtos.AllInfoDTO;
 import dtos.BoatDTO;
 import dtos.OwnerDTO;
 import facades.AdminFacade;
@@ -41,6 +42,8 @@ public class AdminResource {
         List<OwnerDTO> ownerDTOS = userFacade.getAllOwners();
         return gson.toJson(ownerDTOS);
     }
+
+
     //US4 - TODO: Admin roles
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -52,6 +55,21 @@ public class AdminResource {
         }catch(WebApplicationException e){
             throw new WebApplicationException(e.getMessage());
         }
+    }
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("getAllBoats")
+    public String getAllBoats() {
+        List<BoatDTO> boats = adminFacade.getAllBoats();
+        return gson.toJson(boats);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("getAllInfoByBoatId/{boatId}")
+    public String getAllInfoByBoatId(@PathParam("boatId") String boatId){
+        AllInfoDTO allInfoDTO = adminFacade.getAllInfoByBoatId(boatId);
+        return gson.toJson(allInfoDTO);
     }
 
     //US 5

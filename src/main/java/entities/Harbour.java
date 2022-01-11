@@ -15,7 +15,7 @@ public class Harbour {
     @Column(name = "id")
     private Integer id;
 
-   @OneToMany(cascade = CascadeType.PERSIST)
+   @OneToMany(mappedBy = "harbour", cascade = CascadeType.PERSIST)
 private List<Boat> boatList;
 
     @Column(name = "address")

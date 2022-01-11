@@ -83,7 +83,12 @@ public class SetupTestUsers {
 
     //adding boats
     Boat boat1 = new Boat("Volvo","make","speedboat","www.img.com");
-    Boat boat2 = new Boat("Volvo","make","speedboat","www.img.com");
+    Boat boat2 = new Boat("Volvo2","make2","speedboat2","www.img.com2");
+
+    //Adding owners
+    Owner owner1 = new Owner("test1","test1",1111);
+    Owner owner2 = new Owner("test2","test2",2222);
+    owner1.addBoatToOwner(boat1);
 
     //Connecting boat to harbour
     harbour1.addBoat(boat1);
