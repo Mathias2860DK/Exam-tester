@@ -25,7 +25,7 @@ import java.util.List;
 public class AdminResource {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     
-    private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
+    private EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     private final UserFacade userFacade = UserFacade.getUserFacade(EMF);
     private final AdminFacade adminFacade = AdminFacade.getAdminFacade(EMF);
     @Context

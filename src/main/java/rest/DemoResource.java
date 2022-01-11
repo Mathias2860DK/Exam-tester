@@ -30,7 +30,7 @@ import utils.SetupTestUsers;
 @Path("info")
 public class DemoResource {
     
-    private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
+    private EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     private final UserFacade userFacade = UserFacade.getUserFacade(EMF);
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     @Context
