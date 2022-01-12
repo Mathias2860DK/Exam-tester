@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
-//Disabled
+@Disabled
 public class LoginEndpointTest {
 
 
