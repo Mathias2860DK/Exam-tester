@@ -61,7 +61,7 @@ public class AdminResource {
     @Path("getAllBoats")
     public String getAllBoats() {
         List<BoatDTO> boats = adminFacade.getAllBoats();
-        return gson.toJson(boats);
+        return new Gson().toJson(boats);
     }
 
     @GET
@@ -79,6 +79,15 @@ public class AdminResource {
     public String connectBoatToHarbour(@PathParam("harbourId") String harbourId, String boatId){
     adminFacade.connectBoatToHarbour(harbourId,boatId);
     return "";
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/editBoat/{boatId}")
+    public String editBoat(@PathParam("boatId") String boatId, String jsonBoat){
+        BoatDTO boatDTO = gson.fromJson(jsonBoat,BoatDTO.class);
+        BoatDTO boatDTO1 = adminFacade.editBoat(boatId,boatDTO);
+        return gson.toJson(boatDTO1);
     }
 
 

@@ -36,6 +36,24 @@ public class AdminFacade {
         return instance;
     }
 
+    public BoatDTO editBoat(String boatId, BoatDTO boatDTO){
+        EntityManager em = emf.createEntityManager();
+        int boatIdInt = Integer.parseInt(boatId);
+        Boat boat = em.find(Boat.class,boatIdInt);
+
+        boat.setBrand(boatDTO.getBrand());
+        boat.setImage(boatDTO.getImage());
+        boat.setMake(boatDTO.getMake());
+        boat.setName(boatDTO.getName());
+
+
+
+        em.getTransaction().begin();
+        em.merge(boat);
+        em.getTransaction().commit();
+
+        return new BoatDTO(boat);
+    }
     public List<BoatDTO> getAllBoats() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Boat> query = em.createQuery("SELECT b FROM Boat b", Boat.class);

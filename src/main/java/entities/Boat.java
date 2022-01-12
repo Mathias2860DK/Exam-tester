@@ -99,6 +99,10 @@ public class Boat {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "Boat{" +

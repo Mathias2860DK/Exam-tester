@@ -1,25 +1,26 @@
 package rest;
 
-import entities.User;
-import entities.Role;
+import com.google.gson.Gson;
+import dtos.BoatDTO;
+import entities.*;
 
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import static org.hamcrest.Matchers.equalTo;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
 //Disabled
@@ -32,7 +33,9 @@ public class LoginEndpointTest {
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
     private static EntityManagerFactory emf;
-    
+    Boat boat;
+    Boat boat2;
+
     static HttpServer startServer() {
         ResourceConfig rc = ResourceConfig.forApplication(new ApplicationConfig());
         return GrizzlyHttpServerFactory.createHttpServer(BASE_URI, rc);
@@ -55,7 +58,7 @@ public class LoginEndpointTest {
     public static void closeTestServer() {
         //Don't forget this, if you called its counterpart in @BeforeAll
         EMF_Creator.endREST_TestWithDB();
-        
+
         httpServer.shutdownNow();
     }
 
@@ -69,7 +72,16 @@ public class LoginEndpointTest {
             //Delete existing users and roles to get a "fresh" database
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
+            boat = new Boat("brand", "volvo", "speedboat", "www.img.com");
+            boat2 = new Boat("brand2", "volvo2", "speedboat2", "www.img.com2");
 
+            Harbour harbour = new Harbour("Vedbækvej","Vedbæk havn",1000);
+
+            Owner owner = new Owner("owner","address",1000);
+            List<Owner> owners = new ArrayList<>();
+            owners.add(owner);
+            boat.setOwners(owners);
+            boat.setHarbour(harbour);
             Role userRole = new Role("user");
             Role adminRole = new Role("admin");
             User user = new User("user", "test");
@@ -81,9 +93,13 @@ public class LoginEndpointTest {
             both.addRole(adminRole);
             em.persist(userRole);
             em.persist(adminRole);
+            em.persist(harbour);
+            em.persist(boat);
+            em.persist(boat2);
             em.persist(user);
             em.persist(admin);
             em.persist(both);
+            //boat.setId(boat.getId());
             //System.out.println("Saved test data to database");
             em.getTransaction().commit();
         } finally {
@@ -222,4 +238,58 @@ public class LoginEndpointTest {
                 .body("message", equalTo("Not authenticated - do login"));
     }
 
+    // Boat boat = new Boat("brand","volvo","speedboat","www.img.com");
+    //            Boat boat2 = new Boat("brand2","volvo2","speedboat2","www.img.com2");
+
+    @Test
+    public void getAllBoats() {
+        logOut();
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/admin/getAllBoats").then()
+                .statusCode(200)
+                .body(equalTo("[{\"id\":1,\"brand\":\"brand\",\"make\":\"volvo\",\"name\":\"speedboat\",\"image\":\"www.img.com\"},{\"id\":2,\"brand\":\"brand2\",\"make\":\"volvo2\",\"name\":\"speedboat2\",\"image\":\"www.img.com2\"}]"));
+    }
+
+    @Test
+    @DisplayName("UserStory 3")
+    public void createBoat() {
+        Boat boat = new Boat("brand","make","name","image");
+        BoatDTO boatDTO = new BoatDTO(boat);
+
+        String requestBody = new Gson().toJson(boatDTO);
+
+        //login("admin", "test");
+
+        given()
+                .contentType("application/json")
+               // .header("x-access-token", securityToken)
+                .and()
+                .body(requestBody)
+                .post("/admin/createBoat")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("name", equalTo("name"))
+                .body("brand",equalTo("brand"));
+    }
+
+    @Test
+    public void getAllInfoByBoatId() {
+        given().log().all().when().get("/admin/getAllInfoByBoatId/{id}", boat.getId()).then().log().body();
+
+        given()
+                .contentType("application/json")
+                .get("/admin/getAllInfoByBoatId/{id}", boat.getId()).then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("boat.brand", equalTo(boat.getBrand()))
+                .body("owners.size()",equalTo(1));//Checks size of array
+    }
 }
+
+
+
+
+
